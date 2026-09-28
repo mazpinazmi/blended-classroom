@@ -135,7 +135,7 @@ let testMode=false,gateEnabled=true,sessionStarted=false,chapterCompleted=false;
 let student={id:'',name:'',className:'',startedAt:''};
 let lecturerAction=null;
 const LECTURER_PASSWORD='085195';
-const DATA_ENDPOINT='https://script.google.com/macros/s/AKfycbyj6UmDtX3G245bcKxyCWzn9rXAFZWf9bM3DZ3XMGlue96CuP8q0W1S1OuyzGw-Jug/exec';
+const DATA_ENDPOINT='https://script.google.com/macros/s/AKfycbxQIUcu2zUdbhq-AWiRrtb-i7GYbqvfArasKGvLP5xPdEYYWwJ84QcxVOXVpsvW_PceGA/exec';
 
 function saveLearningState(){
  if(!student.id)return;
@@ -233,11 +233,12 @@ async function saveStudentResult(){
  if(!DATA_ENDPOINT){msg.textContent='✅ Result saved on this device.';msg.className='success';return}
  msg.textContent='Saving result to class database…';
  try{
-  const res=await fetch(DATA_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(record)});
-  await res.text();
-  msg.textContent='☁️ Result saved to Google Sheet ✓';msg.className='success';
+  await fetch(DATA_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(record)});
+  msg.innerHTML='☁️ <b>Result sent to Google Sheet ✓</b><br><span style=\"font-size:12px\">Please verify your result in the class database.</span>';
+  msg.className='success';
  }catch(err){
-  msg.textContent='Could not reach the shared sheet. Your result is still saved on this device.';msg.className='error';
+  console.error(err);
+  msg.textContent='⚠️ Could not send result. Your result is still saved on this device.';msg.className='error';
  }
 }
 
