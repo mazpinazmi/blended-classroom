@@ -309,38 +309,73 @@ function render(){
   <p id="taskStatus" class="muted">TASK: Watch the complete video first, then activate the learning checkbox.</p>`;
  else if(idx===2) body=`
   <h2>⚡ EXPLORE — HOW DOES DC BECOME AC?</h2>
-  <p class="muted">Use the switches below. Observe how changing the switching state changes the output polarity.</p>
-  <div class="switchboard">
-   <div class="switch">
-    <h3>POWER SWITCHES</h3>
-    <button id="s1btn" class="green" onclick="toggleSwitch(1)">S1: ON</button>
-    <button id="s2btn" class="secondary" onclick="toggleSwitch(2)">S2: OFF</button>
-    <div class="sw on" id="s1">S1 ON</div>
-    <div class="sw off" id="s2">S2 OFF</div>
-    <p class="polarity">Try both valid states and observe the output.</p>
-   </div>
-   <div>
-    <h3>OUTPUT</h3>
-    <div class="output" id="output">Vo = +Vdc</div>
-    <div class="wave"><div class="line"></div><div class="sq"></div><div class="mid"></div></div>
-   </div>
-  </div>
-  <div class="diagram">
-   <div class="flow">
-    <div class="block">+Vdc<br><small>DC source</small></div><div class="arrow">→</div>
-    <div class="block">SWITCHING<br><small>S1 / S2</small></div><div class="arrow">→</div>
-    <div class="block">LOAD<br><small>AC voltage</small></div>
-   </div>
-  </div>
-  <div class="notice"><b>Key idea:</b> The DC source itself does not change polarity. The <b>switching sequence</b> determines which polarity appears across the load.</div>
-  <div class="q">
-   <p><b>Interactive Challenge:</b> Which sequence creates an alternating output?</p>
-   <label><input type="radio" name="switchQ" value="1" onchange="switchQ()"> S1 ON → S2 ON → repeat</label>
-   <label><input type="radio" name="switchQ" value="2" onchange="switchQ()"> S1 ON → S2 OFF, then S1 OFF → S2 ON</label>
-   <label><input type="radio" name="switchQ" value="3" onchange="switchQ()"> Both switches permanently OFF</label>
-  </div>
-  <p id="taskStatus" class="muted">TASK: Operate the switches and answer the Interactive Challenge.</p>`;
+  <p class="muted">An inverter does not change the DC source polarity. Instead, it uses a <b>switching sequence</b> to reverse the polarity across the load. Try the two valid switching states below.</p>
 
+  <div class="notice"><b>🎯 YOUR TASK</b><br>
+   1. Activate the <b>+V<sub>dc</sub></b> state.<br>
+   2. Activate the <b>−V<sub>dc</sub></b> state.<br>
+   3. Observe how the output polarity reverses.<br>
+   4. Answer the Interactive Challenge.
+  </div>
+
+  <div class="hbridge" style="display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:14px;align-items:center;margin:16px 0">
+   <div class="card" style="text-align:center">
+    <b>LEFT LEG</b>
+    <div id="hs1" class="sw off" style="margin-top:10px">S1 OFF</div>
+    <div id="hs2" class="sw off" style="margin-top:8px">S2 OFF</div>
+   </div>
+   <div class="card" style="text-align:center;background:#071426;border-color:#315b82">
+    <div style="font-size:13px;color:#8fb4d4">DC SOURCE</div>
+    <div style="font-size:24px;font-weight:800;margin:5px 0">+V<sub>dc</sub></div>
+    <div style="font-size:28px;line-height:1.1">↕</div>
+    <div style="font-size:13px;color:#8fb4d4">H-BRIDGE SWITCHING</div>
+    <div style="font-size:30px;margin:7px 0">⇄</div>
+    <div style="font-size:13px;color:#8fb4d4">LOAD</div>
+    <div id="bridgeLoad" style="font-size:24px;font-weight:800;margin-top:5px">Vo = 0 V</div>
+   </div>
+   <div class="card" style="text-align:center">
+    <b>RIGHT LEG</b>
+    <div id="hs3" class="sw off" style="margin-top:10px">S3 OFF</div>
+    <div id="hs4" class="sw off" style="margin-top:8px">S4 OFF</div>
+   </div>
+  </div>
+
+  <div class="switchboard" style="grid-template-columns:1fr 1fr 1fr">
+   <button class="green" onclick="setInverterState('positive')">⬆ +V<sub>dc</sub><br><small>S1 ON + S4 ON</small></button>
+   <button class="secondary" onclick="setInverterState('zero')">⏸ 0 V<br><small>ALL SWITCHES OFF</small></button>
+   <button class="secondary" onclick="setInverterState('negative')">⬇ −V<sub>dc</sub><br><small>S2 ON + S3 ON</small></button>
+  </div>
+
+  <div class="card" style="margin-top:16px;text-align:center">
+   <div class="muted">OUTPUT VOLTAGE ACROSS LOAD</div>
+   <div id="output" class="output" style="font-size:38px;margin:10px 0">Vo = 0 V</div>
+   <div id="polarityText" class="notice" style="margin:0">No output polarity selected yet.</div>
+   <div style="margin-top:14px">
+    <div class="muted" style="margin-bottom:6px">SIMPLIFIED OUTPUT WAVEFORM</div>
+    <div id="waveform" style="height:70px;border:1px solid #315b82;border-radius:10px;background:#050b15;display:flex;align-items:center;justify-content:center;overflow:hidden">
+      <svg width="100%" height="70" viewBox="0 0 600 70" preserveAspectRatio="none" aria-label="Output waveform">
+       <line x1="0" y1="35" x2="600" y2="35" stroke="#38536d" stroke-width="1"/>
+       <polyline points="0,35 80,35 80,12 220,12 220,35 300,35 300,58 440,58 440,35 520,35 520,12 600,12" fill="none" stroke="#61d6ff" stroke-width="4"/>
+      </svg>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:#8fb4d4;margin-top:4px"><span>+Vdc</span><span>0</span><span>−Vdc</span></div>
+   </div>
+  </div>
+
+  <div class="notice"><b>🔑 KEY IDEA</b><br>
+   <b>Positive half-cycle:</b> S1 + S4 ON → V<sub>o</sub> = +V<sub>dc</sub><br>
+   <b>Negative half-cycle:</b> S2 + S3 ON → V<sub>o</sub> = −V<sub>dc</sub><br>
+   Repeatedly alternating these two states makes the load voltage alternate polarity — the basic idea behind <b>DC → AC conversion</b>.
+  </div>
+
+  <div class="q">
+   <p><b>Interactive Challenge:</b> Which switching sequence creates an alternating output?</p>
+   <label><input type="radio" name="switchQ" value="1" onchange="switchQ()"> S1 + S4 ON → S2 + S3 ON → repeat</label>
+   <label><input type="radio" name="switchQ" value="2" onchange="switchQ()"> S1 + S2 ON → S3 + S4 ON → repeat</label>
+   <label><input type="radio" name="switchQ" value="3" onchange="switchQ()"> All switches remain OFF</label>
+  </div>
+  <p id="switchStatus" class="muted">SWITCHING STATES OBSERVED: 0 / 2</p>
+  <p id="taskStatus" class="muted">TASK: Observe both +Vdc and −Vdc states, then answer the Interactive Challenge.</p>`;
  else if(idx===3) body=`
   <h2>✅ CHECK — KNOWLEDGE CHECK</h2>
   <div class="notice"><b>Answer all 8 questions.</b> Minimum recommended mastery: 6/8.</div>
@@ -470,20 +505,48 @@ function onYouTubeStateChange(event){
   updateTimer();
  }
 }
-let sw1=true,sw2=false;
-function toggleSwitch(n){
- if(n===1){sw1=!sw1}else{sw2=!sw2}
- document.getElementById('s1').textContent=sw1?'S1 ON':'S1 OFF';
- document.getElementById('s2').textContent=sw2?'S2 ON':'S2 OFF';
- document.getElementById('s1').className='sw '+(sw1?'on':'off');
- document.getElementById('s2').className='sw '+(sw2?'on':'off');
- document.getElementById('output').textContent=(sw1&&!sw2)?'Vo = +Vdc':(!sw1&&sw2)?'Vo = −Vdc':'Vo = 0 / invalid state';
+let positiveSeen=false,negativeSeen=false,switchChallengeCorrect=false;
+function setInverterState(state){
+ const states={
+  positive:{s1:true,s2:false,s3:false,s4:true,vo:'+Vdc',text:'POSITIVE POLARITY: current path produces +Vdc across the load.'},
+  negative:{s1:false,s2:true,s3:true,s4:false,vo:'−Vdc',text:'NEGATIVE POLARITY: current path reverses and produces −Vdc across the load.'},
+  zero:{s1:false,s2:false,s3:false,s4:false,vo:'0 V',text:'ZERO OUTPUT: no active switching path is selected.'}
+ };
+ const x=states[state];
+ ['s1','s2','s3','s4'].forEach(n=>{
+  const el=document.getElementById('hs'+n.slice(1));
+  if(!el)return;
+  const on=x[n];el.textContent=n.toUpperCase()+(on?' ON':' OFF');el.className='sw '+(on?'on':'off');
+ });
+ document.getElementById('output').textContent='Vo = '+x.vo;
+ document.getElementById('bridgeLoad').textContent='Vo = '+x.vo;
+ document.getElementById('polarityText').textContent=x.text;
+ if(state==='positive')positiveSeen=true;
+ if(state==='negative')negativeSeen=true;
+ const count=(positiveSeen?1:0)+(negativeSeen?1:0);
+ const st=document.getElementById('switchStatus');
+ if(st)st.textContent='SWITCHING STATES OBSERVED: '+count+' / 2';
+ evaluateExploreTask();
 }
-let switchUsed=false;
 function switchQ(){
  const x=document.querySelector('input[name="switchQ"]:checked');
- if(x&&x.value==='2'){switchUsed=true;markTask()}
- else{document.getElementById('taskStatus').textContent='Try again. The load must see alternating polarity.'}
+ switchChallengeCorrect=!!(x&&x.value==='1');
+ const st=document.getElementById('switchStatus');
+ if(!switchChallengeCorrect){
+  const m=document.getElementById('taskStatus');
+  if(m){m.textContent='Try again. The output must alternate between +Vdc and −Vdc by reversing the switching path.';m.className='error';}
+ } else evaluateExploreTask();
+}
+function evaluateExploreTask(){
+ if(positiveSeen&&negativeSeen&&switchChallengeCorrect){markTask();}
+ else{
+  const m=document.getElementById('taskStatus');
+  if(m){
+   m.textContent='TASK: '+(positiveSeen?'✓ +Vdc observed':'Observe +Vdc')+' • '+(negativeSeen?'✓ −Vdc observed':'Observe −Vdc')+' • '+(switchChallengeCorrect?'✓ Challenge correct':'Answer challenge correctly');
+   m.className='muted';
+  }
+  updateTimer();
+ }
 }
 function checkQuiz(){
  const answers=[1,0,0,1,0,0,2,0], vals=[];
