@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Topic 5 - Inverter Circuits | ASYN 1</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:radial-gradient(circle at 15% 10%,#18285a 0,#0b1430 28%,#050914 70%,#03050b 100%);color:#eaf2ff;min-height:100vh;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;z-index:-2;opacity:.18;background-image:linear-gradient(90deg,transparent 49%,#45b8ff 50%,transparent 51%),linear-gradient(0deg,transparent 49%,#45b8ff 50%,transparent 51%);background-size:90px 90px;mask-image:radial-gradient(circle at center,#000 0%,transparent 82%)}
+body:after{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradient(circle at 80% 20%,#8b5cf633 0,transparent 28%),radial-gradient(circle at 20% 80%,#00d4ff22 0,transparent 24%)}
+.app{max-width:1180px;margin:auto;padding:24px}.hero{position:relative;overflow:hidden;border:1px solid #315b82;border-radius:20px;padding:24px;margin-bottom:18px;background:linear-gradient(135deg,#0c1934ee,#11103eee);box-shadow:0 18px 55px #0008}.hero:after{content:"";position:absolute;width:320px;height:320px;right:-80px;top:-130px;border:2px solid #45b8ff44;border-radius:50%;box-shadow:0 0 0 35px #45b8ff12,0 0 0 70px #8b5cf612;pointer-events:none}.chip{width:125px;height:95px;border:2px solid #5ed0ff;border-radius:14px;background:linear-gradient(145deg,#1b3d62,#0b182b);box-shadow:0 0 24px #28b9ff55,inset 0 0 18px #28b9ff22;position:relative;display:flex;align-items:center;justify-content:center;font-weight:bold;letter-spacing:2px}.chip:before,.chip:after{content:"";position:absolute;inset:12px;border:1px dashed #5ed0ff55;border-radius:8px}.pins{position:absolute;left:-16px;right:-16px;top:12px;bottom:12px;border-top:2px solid #5ed0ff88;border-bottom:2px solid #5ed0ff88;box-shadow:0 24px 0 -10px #5ed0ff66,0 -24px 0 -10px #5ed0ff66} .hero-grid{display:grid;grid-template-columns:1fr 180px;gap:20px;align-items:center}.hero-kicker{color:#62d7ff;font-size:12px;font-weight:bold;letter-spacing:2px}.hero h1{font-size:32px;margin:6px 0}.hero p{margin:5px 0;color:#a9bbd4}.hero-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.top{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:18px}
+h1{margin:0;font-size:28px}.muted{color:#9eb0c8}
+.badge{padding:8px 12px;border-radius:20px;background:#17234b;border:1px solid #23476d;font-size:13px}
+.layout{display:grid;grid-template-columns:280px 1fr;gap:18px}
+.card{background:linear-gradient(145deg,#0d1a2bf2,#091323f2);border:1px solid #203852;border-radius:16px;padding:18px;box-shadow:0 8px 25px #0004}
+.roadmap .item{padding:12px;margin:8px 0;border-radius:10px;border:1px solid #1d3855;cursor:pointer}
+.item.active{border-color:#56b4ff;background:#102a44}.item.locked{opacity:.45;cursor:not-allowed}.item.done{border-color:#35c98b}
+.num{display:inline-flex;width:27px;height:27px;border-radius:50%;align-items:center;justify-content:center;background:#183452;margin-right:8px;font-size:12px}
+.progress{height:8px;background:#14283e;border-radius:8px;overflow:hidden;margin:10px 0 18px}
+.bar{height:100%;width:0;background:#4eb5ff}
+.timer{font-size:42px;font-weight:bold;text-align:center;margin:12px 0;color:#fff}.timer.ready{color:#55d89c}
+button{border:0;border-radius:10px;padding:11px 15px;background:#2f9de8;color:white;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.35;cursor:not-allowed}.secondary{background:#17304a}.green{background:#1e9c70}.danger{background:#8f4051}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.notice{padding:12px;border-radius:10px;background:#10263b;border-left:4px solid #4eb5ff;margin:12px 0}
+.footer{margin-top:18px;text-align:center;color:#8195ae;font-size:12px}
+label{display:block;font-size:12px;color:#9eb0c8;margin-bottom:5px}
+input[type=text]{width:100%;padding:12px;border-radius:9px;border:1px solid #2b4865;background:#081522;color:white}
+input[type=radio],input[type=checkbox]{accent-color:#4eb5ff}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.q{margin:15px 0}.q label{display:block;margin:8px 0;padding:10px;background:#102239;border-radius:8px;cursor:pointer}
+.diagram{background:#081522;border:1px solid #29435e;border-radius:14px;padding:18px;margin:15px 0;text-align:center}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap}
+.block{padding:18px 20px;border:1px solid #4a7ba8;border-radius:12px;background:linear-gradient(145deg,#123152,#0c1b31);min-width:135px;box-shadow:0 0 20px #248bce18}
+.arrow{font-size:28px;color:#56b4ff}
+.switchboard{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:center}
+.switch{padding:18px;border:1px solid #29435e;border-radius:14px;background:#0a1524}
+.sw{font-size:30px;font-weight:bold;padding:14px;border-radius:12px;text-align:center;background:#17304a;margin:10px 0}
+.sw.on{background:#1e9c70}.sw.off{background:#17304a}
+.output{font-size:30px;font-weight:bold;padding:25px;border-radius:14px;background:#081522;border:1px solid #315b82;text-align:center}
+.wave{height:150px;background:#081522;border:1px solid #29435e;border-radius:12px;position:relative;overflow:hidden;margin-top:12px}
+.wave .line{position:absolute;left:0;right:0;top:50%;height:2px;background:#29435e}
+.wave .sq{position:absolute;left:8%;top:25%;width:84%;height:50%;border-top:4px solid #4eb5ff;border-bottom:4px solid #4eb5ff}
+.wave .mid{position:absolute;left:50%;top:25%;height:50%;border-left:4px solid #4eb5ff}
+.polarity{font-size:15px;color:#9eb0c8;margin-top:8px}
+.success{color:#55d89c}.warning{color:#ffcc66}.error{color:#ff9a9a}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.top{flex-direction:column;align-items:flex-start}.grid2,.grid3,.switchboard,.hero-grid{grid-template-columns:1fr}.chip{margin:auto}}
+</style>
+  <script src="https://www.youtube.com/iframe_api"></script>
+</head>
+<body>
+<div class="app">
+  <div class="hero">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-kicker">POWER ELECTRONICS • BLENDED CLASSROOM</div>
+        <h1>TOPIC 5: INVERTER CIRCUITS</h1>
+        <p>ASYN 1 • Introduction to Inverter</p>
+        <div class="hero-actions">
+          <span class="badge">⚡ DC → AC</span><span class="badge">🎓 ASYNC LEARNING</span><span class="badge">⏱️ 60 MIN</span>
+        </div>
+      </div>
+      <div class="chip"><span class="pins"></span>INVERTER</div>
+    </div>
+  </div>
+  <div class="top">
+    <div>
+      <h1 style="font-size:22px">ASYN 1 LEARNING SPACE</h1>
+      <div class="muted">Learn → Explore → Check → Reflect → Complete</div>
+    </div>
+    <div class="actions">
+      <button id="modeBtn" class="secondary" onclick="requestLecturerAccess('mode')">🎓 STUDENT MODE</button>
+      <button id="gateBtn" class="secondary" onclick="requestLecturerAccess('gate')">🔒 STRICT GATE</button>
+      <button class="secondary" onclick="requestLecturerAccess('dashboard')">📊 LECTURER DASHBOARD</button>
+    </div>
+  </div>
+  <div id="modeNotice" class="notice">🎓 <b>STRICT GATE:</b> Complete each task and wait for the allocated time to reach 00:00 before moving to the next activity.</div>
+
+  <div id="studentPanel" class="card" style="margin-bottom:18px;border-color:#315b82">
+    <h3 style="margin-top:0">👨‍🎓 STUDENT INFORMATION</h3>
+    <p class="muted">Enter your information before starting ASYN 1. Your progress is stored in this browser.</p>
+    <div class="grid3">
+      <div><label>Student ID</label><input id="studentId" type="text" placeholder="e.g. PSMEA001"></div>
+      <div><label>Name</label><input id="studentName" type="text" placeholder="Your name"></div>
+      <div><label>Class</label><input id="studentClass" type="text" placeholder="e.g. PSME A0"></div>
+    </div>
+    <div class="notice">
+      <b>⏱️ ASYN 1 TARGET: 60 MINUTES</b><br>
+      Start 5 min • Learn 15 min • Explore 15 min • Check 10 min • Reflect 10 min • Wrap Up 5 min
+    </div>
+    <div class="actions">
+      <button class="green" onclick="startSession()">▶ START ASYN 1</button>
+      <span id="studentStatus" class="muted" style="align-self:center"></span>
+    </div>
+  </div>
+
+  <div class="layout">
+    <aside class="card roadmap">
+      <b>ASYN 1 ROADMAP</b>
+      <div class="progress"><div id="bar" class="bar"></div></div>
+      <div id="roadmap"></div>
+    </aside>
+    <main class="card"><div id="content"></div></main>
+  </div>
+  <div class="footer">⚡ Topic 5 • Inverter Circuits • ASYN 1 • Blended Classroom</div>
+
+  <div id="lecturerAuth" style="display:none;position:fixed;inset:0;background:#020713dd;z-index:50;align-items:center;justify-content:center;padding:20px">
+    <div class="card" style="width:min(420px,100%);border-color:#4dbfff">
+      <h2 style="margin-top:0">🔐 Lecturer Access</h2>
+      <p class="muted">Enter the lecturer password to access Lecturer Tools.</p>
+      <label>Password</label>
+      <input id="lecturerPassword" type="password" inputmode="numeric" maxlength="6" placeholder="Enter password" onkeydown="if(event.key==='Enter')submitLecturerAccess()">
+      <div id="authMsg" class="muted" style="margin-top:10px;min-height:18px"></div>
+      <div class="actions" style="margin-top:12px;justify-content:flex-end">
+        <button class="secondary" onclick="closeLecturerAuth()">CANCEL</button>
+        <button class="green" onclick="submitLecturerAccess()">UNLOCK</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dashboard" style="display:none;position:fixed;inset:0;background:#020713ee;z-index:40;overflow:auto;padding:30px">
+    <div style="max-width:1100px;margin:auto;background:#0b1426;border:1px solid #315b82;border-radius:18px;padding:24px;box-shadow:0 20px 70px #000a">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:15px">
+        <div><h2 style="margin:0">📊 LECTURER DASHBOARD</h2><div class="muted">Topic 5 • Inverter Circuits • ASYN 1</div></div>
+        <button class="secondary" onclick="closeDashboard()">✕ CLOSE</button>
+      </div>
+      <div id="dashContent" style="margin-top:20px"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const activities=[
+ {id:'start',title:'START HERE',mins:5},
+ {id:'learn',title:'LEARN • What is an Inverter?',mins:15},
+ {id:'explore',title:'EXPLORE • DC → AC Switching',mins:15},
+ {id:'check',title:'CHECK • Knowledge Check',mins:10},
+ {id:'reflect',title:'REFLECT • Learning Reflection',mins:10},
+ {id:'wrap',title:'WRAP UP',mins:5}
+];
+
+let idx=0,done=Array(activities.length).fill(false),taskDone=false;
+let sessionStarted=false,remain=0,timerEnd=0,interval=null;
+let student={};
+let videoWatched=false, learnAcknowledged=false, youtubePlayer=null;
+let gateEnabled=true,testMode=false,lecturerAction=null;
+const LECTURER_PASSWORD='085195';
+const DATA_ENDPOINT='https://script.google.com/macros/s/AKfycbyj6UmDtX3G245bcKxyCWzn9rXAFZWf9bM3DZ3XMGlue96CuP8q0W1S1OuyzGw-Jug/exec';
+
+function save(){
+ localStorage.setItem('inverterAsyn1',JSON.stringify({
+  student,sessionStarted,idx,done,taskDone,timerEnd,remain,
+  videoWatched,learnAcknowledged
+ }));
+}
+function restore(){
+ try{
+  const x=JSON.parse(localStorage.getItem('inverterAsyn1')||'null');
+  if(!x)return false;
+  student=x.student||{};sessionStarted=!!x.sessionStarted;idx=x.idx||0;
+  done=Array.isArray(x.done)?x.done:Array(activities.length).fill(false);
+  taskDone=!!x.taskDone;timerEnd=Number(x.timerEnd)||0;remain=Number(x.remain)||0;
+  videoWatched=!!x.videoWatched;learnAcknowledged=!!x.learnAcknowledged;
+  videoWatched=!!x.videoWatched;learnAcknowledged=!!x.learnAcknowledged;
+  return sessionStarted;
+ }catch(e){return false}
+}
+function startSession(){
+ const id=document.getElementById('studentId').value.trim();
+ const name=document.getElementById('studentName').value.trim();
+ const cls=document.getElementById('studentClass').value.trim();
+ const s=document.getElementById('studentStatus');
+ if(!id||!name||!cls){s.textContent='Please complete all student information.';s.className='warning';return}
+ student={id,name,className:cls};
+ sessionStarted=true; idx=0; done=Array(activities.length).fill(false);
+ taskDone=false; videoWatched=false; learnAcknowledged=false;
+ document.querySelectorAll('#studentPanel input').forEach(x=>x.disabled=true);
+ s.textContent='Profile saved ✓ ASYN 1 started.';s.className='success';
+ render();resetTimer();save();
+}
+function renderRoadmap(){
+ document.getElementById('roadmap').innerHTML=activities.map((a,i)=>{
+  // In FREE NAVIGATION every activity is clickable.
+  // In STRICT GATE, the next activity remains locked until the previous one is completed.
+  const locked=gateEnabled && i>0 && !done[i-1];
+  const status=done[i]?'COMPLETED':(locked?'LOCKED':'AVAILABLE');
+  return `<div class="item ${i===idx?'active ':''}${done[i]?'done ':''}${locked?'locked':''}" onclick="${locked?'':`go(${i})`}">
+   <span class="num">${i+1}</span><b>${a.title}</b><br><small>${status} • ${a.mins} min</small>
+  </div>`;
+ }).join('');
+ document.getElementById('bar').style.width=(done.filter(Boolean).length/activities.length*100)+'%';
+}
+function resetTimer(){
+ clearInterval(interval);
+ remain=activities[idx].mins*60;
+ timerEnd=Date.now()+remain*1000/(testMode?10:1);
+ taskDone=false;
+ learnAcknowledged=false;
+ updateTimer(); interval=setInterval(updateTimer,250);
+}
+function updateTimer(){
+ const el=document.getElementById('timer');
+ if(!el)return;
+ if(!sessionStarted){el.textContent='START';return}
+ remain=Math.max(0,Math.ceil((timerEnd-Date.now())/1000*(testMode?10:1)));
+ el.textContent=String(Math.floor(remain/60)).padStart(2,'0')+':'+String(remain%60).padStart(2,'0');
+ el.className='timer '+(remain===0?'ready':'');
+ const b=document.getElementById('completeBtn');
+ if(b)b.disabled=gateEnabled?!(remain===0&&taskDone):false;
+ if(b)b.textContent=gateEnabled?'COMPLETE & UNLOCK NEXT':'SAVE & GO NEXT';
+}
+function go(i){if(!sessionStarted)return;if(gateEnabled&&i>0&&!done[i-1])return;idx=i;render();resetTimer();save()}
+function complete(){
+ if(gateEnabled&&(remain!==0||!taskDone))return;
+ done[idx]=true;save();
+ if(idx<activities.length-1){idx++;render();resetTimer();save()}
+ else{renderCompletion()}
+}
+function markTask(){
+ taskDone=true;
+ const s=document.getElementById('taskStatus');
+ if(s){s.textContent='TASK COMPLETED ✓';s.className='success'}
+ updateTimer();save();
+}
+function render(){
+ renderRoadmap();
+ const a=activities[idx], c=document.getElementById('content');
+ let body='';
+ if(idx===0) body=`
+  <h2>👋 START HERE</h2>
+  <div class="diagram" style="background:linear-gradient(145deg,#07162a,#10133a)"><div class="flow"><div class="block">🔋 DC SOURCE</div><div class="arrow">→</div><div class="block" style="border-color:#a678ff">⚡ POWER SWITCHES</div><div class="arrow">→</div><div class="block">〰️ AC OUTPUT</div></div></div>
+  <p>Welcome to <b>ASYN 1 — Introduction to Inverter</b>.</p>
+  <div class="notice"><b>Learning focus:</b> Understand what an inverter is, why it is needed, where it is used, and how a DC source can produce an AC output using controlled switching.</div>
+  <h3>By the end of this ASYN, you should be able to:</h3>
+  <div class="grid2">
+   <div class="card">✓ Define an inverter</div>
+   <div class="card">✓ Explain DC → AC conversion</div>
+   <div class="card">✓ Identify common inverter applications</div>
+   <div class="card">✓ Explain the role of switching</div>
+  </div>
+  <div class="notice"><b>💡 Think first:</b><br>How can a constant DC voltage source produce an output voltage that changes polarity?</div>
+  <label><input type="checkbox" id="startCheck" onchange="startCheck()"> I understand what I need to learn in ASYN 1.</label>
+  <p id="taskStatus" class="muted">TASK: Read the learning objectives and activate the checkbox.</p>`;
+
+ else if(idx===1) body=`
+  <h2>📘 LEARN — WHAT IS AN INVERTER?</h2>
+
+  <div class="notice">
+   <b>🎥 REQUIRED VIDEO</b><br>
+   Watch the YouTube video below <b>until it finishes</b> before proceeding to the next activity.
+   <div id="videoStatus" class="warning" style="margin-top:8px">VIDEO STATUS: NOT COMPLETED</div>
+  </div>
+
+  <div style="position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden;border:1px solid #315b82;background:#02050b;box-shadow:0 0 28px #1aa8ff18;margin:14px 0">
+   <div id="youtubePlayer" style="position:absolute;inset:0;width:100%;height:100%"></div>
+  </div>
+
+  <div class="actions" style="justify-content:space-between;align-items:center">
+   <a class="btn secondary" href="https://www.youtube.com/watch?v=iIqhAX0I7lI" target="_blank" rel="noopener">▶ OPEN VIDEO ON YOUTUBE</a>
+   <span class="muted">Video must reach the end ✓</span>
+  </div>
+
+  <div class="notice">
+   <b>Definition</b><br>
+   An <b>inverter</b> is a power electronic converter that converts <b>DC electrical energy into AC electrical energy</b>.
+  </div>
+
+  <div class="diagram">
+   <div class="flow">
+    <div class="block"><b>DC SOURCE</b><br><small>Battery / PV</small></div>
+    <div class="arrow">→</div>
+    <div class="block"><b>INVERTER</b><br><small>Power switches</small></div>
+    <div class="arrow">→</div>
+    <div class="block"><b>AC OUTPUT</b><br><small>Load / Grid</small></div>
+   </div>
+  </div>
+
+  <h3>Inverter vs Rectifier</h3>
+  <div class="grid2">
+   <div class="card"><h3>INVERTER</h3><p>DC → AC</p><small>Example: Battery → AC load</small></div>
+   <div class="card"><h3>RECTIFIER</h3><p>AC → DC</p><small>Example: AC supply → DC link</small></div>
+  </div>
+
+  <h3>Why do we need an inverter?</h3>
+  <ul>
+   <li>Convert DC electrical energy to AC.</li>
+   <li>Control AC output voltage.</li>
+   <li>Control AC output frequency.</li>
+   <li>Supply AC loads from DC sources.</li>
+  </ul>
+
+  <h3>Applications</h3>
+  <div class="grid3">
+   <div class="card"><b>☀️ Solar PV</b><br><small>PV DC → AC for loads/grid</small></div>
+   <div class="card"><b>🔋 UPS</b><br><small>Battery DC → AC during backup</small></div>
+   <div class="card"><b>⚙️ Motor Drive</b><br><small>DC link → controlled AC motor</small></div>
+   <div class="card"><b>🚗 EV</b><br><small>Battery → AC traction motor</small></div>
+   <div class="card"><b>🌱 Renewable Energy</b><br><small>DC generation → AC system</small></div>
+   <div class="card"><b>🏠 Stand-alone</b><br><small>Battery/PV → AC loads</small></div>
+  </div>
+
+  <label style="margin-top:15px">
+   <input type="checkbox" id="learnCheck" onchange="learnCheck()" ${videoWatched?'':'disabled'}>
+   I can explain the purpose and applications of an inverter.
+  </label>
+  <p id="taskStatus" class="muted">TASK: Watch the complete video first, then activate the learning checkbox.</p>`;
+ else if(idx===2) body=`
+  <h2>⚡ EXPLORE — HOW DOES DC BECOME AC?</h2>
+  <p class="muted">Use the switches below. Observe how changing the switching state changes the output polarity.</p>
+  <div class="switchboard">
+   <div class="switch">
+    <h3>POWER SWITCHES</h3>
+    <button id="s1btn" class="green" onclick="toggleSwitch(1)">S1: ON</button>
+    <button id="s2btn" class="secondary" onclick="toggleSwitch(2)">S2: OFF</button>
+    <div class="sw on" id="s1">S1 ON</div>
+    <div class="sw off" id="s2">S2 OFF</div>
+    <p class="polarity">Try both valid states and observe the output.</p>
+   </div>
+   <div>
+    <h3>OUTPUT</h3>
+    <div class="output" id="output">Vo = +Vdc</div>
+    <div class="wave"><div class="line"></div><div class="sq"></div><div class="mid"></div></div>
+   </div>
+  </div>
+  <div class="diagram">
+   <div class="flow">
+    <div class="block">+Vdc<br><small>DC source</small></div><div class="arrow">→</div>
+    <div class="block">SWITCHING<br><small>S1 / S2</small></div><div class="arrow">→</div>
+    <div class="block">LOAD<br><small>AC voltage</small></div>
+   </div>
+  </div>
+  <div class="notice"><b>Key idea:</b> The DC source itself does not change polarity. The <b>switching sequence</b> determines which polarity appears across the load.</div>
+  <div class="q">
+   <p><b>Interactive Challenge:</b> Which sequence creates an alternating output?</p>
+   <label><input type="radio" name="switchQ" value="1" onchange="switchQ()"> S1 ON → S2 ON → repeat</label>
+   <label><input type="radio" name="switchQ" value="2" onchange="switchQ()"> S1 ON → S2 OFF, then S1 OFF → S2 ON</label>
+   <label><input type="radio" name="switchQ" value="3" onchange="switchQ()"> Both switches permanently OFF</label>
+  </div>
+  <p id="taskStatus" class="muted">TASK: Operate the switches and answer the Interactive Challenge.</p>`;
+
+ else if(idx===3) body=`
+  <h2>✅ CHECK — KNOWLEDGE CHECK</h2>
+  <div class="notice"><b>Answer all 8 questions.</b> Minimum recommended mastery: 6/8.</div>
+  ${question(1,'What is the main function of an inverter?',['Convert AC to DC','Convert DC to AC','Store electrical energy','Increase resistance'],1)}
+  ${question(2,'Which is a common inverter application?',['UPS','Fuse','Circuit breaker only','Transformer oil'],0)}
+  ${question(3,'What is normally used to create the alternating output voltage?',['Controlled switching','A resistor only','A fuse','Cable size'],0)}
+  ${question(4,'A solar PV system produces DC energy. Which device can convert it to AC?',['Rectifier','Inverter','Transformer only','Relay'],1)}
+  ${question(5,'If the switching sequence is reversed, the output polarity can:',['Change','Become permanently zero','Become resistance','Stop being electrical'],0)}
+  ${question(6,'An inverter can be used to control AC output:',['Voltage and frequency','Cable length only','Fuse colour','Earth electrode size only'],0)}
+  ${question(7,'Which statement is correct?',['Rectifier: DC→AC','Inverter: AC→DC','Inverter: DC→AC','Inverter: mechanical→electrical'],2)}
+  ${question(8,'The key chain of an inverter is best described as:',['Switching → output waveform','Fuse → cable colour','Resistance → insulation','Transformer oil → frequency'],0)}
+  <button onclick="checkQuiz()">SUBMIT CHECK</button>
+  <p id="quizMsg" class="muted"></p>
+  <p id="taskStatus" class="muted">TASK: Answer all questions and submit the check.</p>`;
+
+ else if(idx===4) body=`
+  <h2>🧠 REFLECT — YOUR LEARNING</h2>
+  <p class="muted">This section helps you identify whether the concept is clear before moving to ASYN 2.</p>
+  <div class="q"><p><b>1. In your own words, explain how a DC source can produce an AC output voltage.</b></p><input id="r1" type="text" placeholder="Write your explanation..."></div>
+  <div class="q"><p><b>2. Which part is still unclear?</b></p>
+   <label><input type="radio" name="difficulty" value="definition"> What an inverter is</label>
+   <label><input type="radio" name="difficulty" value="function"> Function of inverter</label>
+   <label><input type="radio" name="difficulty" value="application"> Applications</label>
+   <label><input type="radio" name="difficulty" value="switching"> DC → AC switching concept</label>
+   <label><input type="radio" name="difficulty" value="frequency"> Switching and output frequency</label>
+   <label><input type="radio" name="difficulty" value="clear"> I understand all of it</label>
+  </div>
+  <div class="q"><p><b>3. How effective was this ASYN activity in helping you understand inverter basics?</b></p>
+   <label><input type="radio" name="effect" value="5"> 5 — Very effective</label>
+   <label><input type="radio" name="effect" value="4"> 4 — Effective</label>
+   <label><input type="radio" name="effect" value="3"> 3 — Moderately effective</label>
+   <label><input type="radio" name="effect" value="2"> 2 — Slightly effective</label>
+   <label><input type="radio" name="effect" value="1"> 1 — Not effective</label>
+  </div>
+  <div class="q"><p><b>4. What should be improved in this ASYN?</b></p><input id="r4" type="text" placeholder="Optional suggestion..."></div>
+  <button onclick="submitReflection()">SUBMIT REFLECTION</button>
+  <p id="refMsg" class="muted"></p>
+  <p id="taskStatus" class="muted">TASK: Complete Questions 1–3 and submit reflection.</p>`;
+
+ else body=`
+  <h2>🎯 WRAP UP — READY FOR ASYN 2?</h2>
+  <div class="notice"><b>Remember these 4 ideas:</b><br>
+   1. Inverter = DC → AC.<br>
+   2. Power semiconductor switches are central to inverter operation.<br>
+   3. Switching sequence determines output polarity and waveform.<br>
+   4. Switching timing is related to output frequency.
+  </div>
+  <div class="q"><p><b>Complete this sentence:</b> “The most important thing I learned about an inverter is…”</p><input id="wrap" type="text" placeholder="Your answer..."></div>
+  <div class="q"><p><b>Write ONE question you want to ask during the next synchronous class.</b></p><input id="nextq" type="text" placeholder="Your question..."></div>
+  <label><input id="noq" type="checkbox" onchange="noQuestion()"> I have no further question at this time.</label>
+  <br><br><button onclick="wrapUp()">SAVE & COMPLETE TASK</button>
+  <p id="wrapMsg" class="muted"></p>
+  <p id="taskStatus" class="muted">TASK: Complete the exit ticket.</p>`;
+
+ c.innerHTML=body+`
+  <hr style="border-color:#203852;margin:24px 0">
+  <div class="muted">Allocated learning time: ${a.mins} minutes</div>
+  <div id="timer" class="timer">--:--</div>
+  <div class="notice"><b>Completion rule:</b> Complete the task AND allow the allocated timer to reach 00:00 before continuing.</div>
+  <div class="actions"><button id="completeBtn" class="green" onclick="complete()" disabled>COMPLETE & UNLOCK NEXT</button></div>`;
+ updateTimer();
+ if(idx===1){
+  if(videoWatched){
+   const cb=document.getElementById('learnCheck');
+   if(cb)cb.disabled=false;
+   const vs=document.getElementById('videoStatus');
+   if(vs){vs.textContent='VIDEO STATUS: COMPLETED ✓';vs.className='success'}
+  }
+  if(typeof YT!=='undefined' && YT.Player) setTimeout(initYouTubePlayer,100);
+ }
+}
+function question(n,text,opts,ans){
+ return `<div class="q"><p><b>Q${n}. ${text}</b></p>${opts.map((o,i)=>`<label><input type="radio" name="q${n}" value="${i}"> ${String.fromCharCode(65+i)}. ${o}</label>`).join('')}</div>`;
+}
+function startCheck(){if(document.getElementById('startCheck').checked)markTask()}
+function learnCheck(){
+ const cb=document.getElementById('learnCheck');
+ if(!cb)return;
+ if(!videoWatched){
+  cb.checked=false;
+  const s=document.getElementById('taskStatus');
+  if(s){s.textContent='Please watch the YouTube video until it finishes before continuing.';s.className='warning'}
+  updateTimer();
+  return;
+ }
+ learnAcknowledged=cb.checked;
+ if(learnAcknowledged)markTask();
+ else{
+  taskDone=false;
+  const s=document.getElementById('taskStatus');
+  if(s){s.textContent='TASK: Confirm that you understand the learning section.';s.className='muted'}
+  updateTimer();save();
+ }
+}
+
+function onYouTubeIframeAPIReady(){
+ if(idx===1) initYouTubePlayer();
+}
+
+function initYouTubePlayer(){
+ const target=document.getElementById('youtubePlayer');
+ if(!target || typeof YT==='undefined' || !YT.Player)return;
+ if(youtubePlayer && typeof youtubePlayer.destroy==='function'){
+  try{youtubePlayer.destroy()}catch(e){}
+ }
+ youtubePlayer=new YT.Player('youtubePlayer',{
+  videoId:'iIqhAX0I7lI',
+  playerVars:{rel:0,modestbranding:1,playsinline:1},
+  events:{onStateChange:onYouTubeStateChange}
+ });
+}
+
+function onYouTubeStateChange(event){
+ if(typeof YT==='undefined')return;
+ if(event.data===YT.PlayerState.ENDED){
+  videoWatched=true;
+  const cb=document.getElementById('learnCheck');
+  const status=document.getElementById('videoStatus');
+  if(cb)cb.disabled=false;
+  if(status){status.textContent='VIDEO STATUS: COMPLETED ✓';status.className='success'}
+  const task=document.getElementById('taskStatus');
+  if(task){
+   task.textContent='VIDEO COMPLETED ✓ — Now activate the checkbox to confirm your learning.';
+   task.className='success';
+  }
+  save();
+  updateTimer();
+ }
+}
+let sw1=true,sw2=false;
+function toggleSwitch(n){
+ if(n===1){sw1=!sw1}else{sw2=!sw2}
+ document.getElementById('s1').textContent=sw1?'S1 ON':'S1 OFF';
+ document.getElementById('s2').textContent=sw2?'S2 ON':'S2 OFF';
+ document.getElementById('s1').className='sw '+(sw1?'on':'off');
+ document.getElementById('s2').className='sw '+(sw2?'on':'off');
+ document.getElementById('output').textContent=(sw1&&!sw2)?'Vo = +Vdc':(!sw1&&sw2)?'Vo = −Vdc':'Vo = 0 / invalid state';
+}
+let switchUsed=false;
+function switchQ(){
+ const x=document.querySelector('input[name="switchQ"]:checked');
+ if(x&&x.value==='2'){switchUsed=true;markTask()}
+ else{document.getElementById('taskStatus').textContent='Try again. The load must see alternating polarity.'}
+}
+function checkQuiz(){
+ const answers=[1,0,0,1,0,0,2,0], vals=[];
+ for(let i=1;i<=8;i++){
+  const x=document.querySelector(`input[name="q${i}"]:checked`);
+  if(!x){document.getElementById('quizMsg').textContent='Please answer all 8 questions.';document.getElementById('quizMsg').className='warning';return}
+  vals.push(Number(x.value));
+ }
+ const score=vals.reduce((s,v,i)=>s+(v===answers[i]?1:0),0);
+ localStorage.setItem('inverterAsyn1Score',score+'/8');
+ const m=document.getElementById('quizMsg');
+ m.innerHTML=`<b>Score: ${score}/8</b><br>${score>=6?'Good — recommended mastery achieved ✓':'Review the learning section and try again.'}`;
+ m.className=score>=6?'success':'error';
+ if(score>=6)markTask();else taskDone=false;
+}
+function submitReflection(){
+ const a=document.getElementById('r1').value.trim();
+ const d=document.querySelector('input[name="difficulty"]:checked');
+ const e=document.querySelector('input[name="effect"]:checked');
+ if(!a||!d||!e){document.getElementById('refMsg').textContent='Please complete Questions 1–3.';document.getElementById('refMsg').className='warning';return}
+ localStorage.setItem('inverterAsyn1Reflection',JSON.stringify({answer:a,difficulty:d.value,effectiveness:e.value,improvement:document.getElementById('r4').value.trim()}));
+ document.getElementById('refMsg').textContent='Reflection saved ✓';document.getElementById('refMsg').className='success';markTask();
+}
+function noQuestion(){
+ const cb=document.getElementById('noq'),q=document.getElementById('nextq');
+ q.disabled=cb.checked;if(cb.checked)q.value='No further question at this time.';
+}
+function wrapUp(){
+ const a=document.getElementById('wrap').value.trim(),q=document.getElementById('nextq').value.trim();
+ if(!a||!q){document.getElementById('wrapMsg').textContent='Please complete both exit-ticket items.';document.getElementById('wrapMsg').className='warning';return}
+ localStorage.setItem('inverterAsyn1Wrap',JSON.stringify({takeaway:a,question:q}));
+ document.getElementById('wrapMsg').textContent='Exit ticket saved ✓';document.getElementById('wrapMsg').className='success';markTask();
+}
+function requestLecturerAccess(action){
+ lecturerAction=action;
+ const modal=document.getElementById('lecturerAuth'),input=document.getElementById('lecturerPassword'),msg=document.getElementById('authMsg');
+ msg.textContent='';msg.className='muted';input.value='';modal.style.display='flex';setTimeout(()=>input.focus(),50);
+}
+function closeLecturerAuth(){document.getElementById('lecturerAuth').style.display='none';lecturerAction=null}
+function submitLecturerAccess(){
+ const input=document.getElementById('lecturerPassword'),msg=document.getElementById('authMsg');
+ if(input.value!==LECTURER_PASSWORD){msg.textContent='Incorrect password.';msg.className='error';return}
+ const action=lecturerAction;closeLecturerAuth();
+ if(action==='gate')toggleGate();else if(action==='mode')toggleMode();else if(action==='dashboard')openDashboard();
+}
+function toggleGate(){
+ gateEnabled=!gateEnabled;
+ document.getElementById('gateBtn').textContent=gateEnabled?'🔒 STRICT GATE':'🔓 FREE NAVIGATION';
+ document.getElementById('modeNotice').innerHTML=gateEnabled?'🎓 <b>STRICT GATE:</b> Complete each task and wait for the allocated time to reach 00:00 before moving to the next activity.':'🛠️ <b>FREE NAVIGATION:</b> All activities are unlocked. Click any activity on the roadmap to preview or test it.';
+ renderRoadmap();updateTimer();
+}
+function toggleMode(){
+ testMode=!testMode;
+ document.getElementById('modeBtn').textContent=testMode?'🧪 TEST MODE':'🎓 STUDENT MODE';
+ document.getElementById('modeNotice').innerHTML=gateEnabled?(testMode?'🧪 <b>TEST + STRICT GATE:</b> Timer runs faster for lecturer testing.':'🎓 <b>STRICT GATE:</b> Complete each task and wait for the allocated time to reach 00:00 before moving to the next activity.'):'🛠️ <b>FREE NAVIGATION:</b> All activities are unlocked. Click any activity on the roadmap to preview or test it.';
+}
+function buildStudentRecord(){
+ const ref=JSON.parse(localStorage.getItem('inverterAsyn1Reflection')||'null');
+ const wrap=JSON.parse(localStorage.getItem('inverterAsyn1Wrap')||'null');
+ return {studentId:student.id||'',name:student.name||'',className:student.className||'',chapter:'Topic 5 - Inverter Circuits - ASYN 1',progress:Math.round(done.filter(Boolean).length/activities.length*100)+'%',checkScore:localStorage.getItem('inverterAsyn1Score')||'',appEffectiveness:ref?.effectiveness||'',mainDifficulty:ref?.difficulty||'',reflection:ref?.answer||'',improvement:ref?.improvement||'',exitTicket:wrap?.takeaway||'',syncQuestion:wrap?.question||'',completedDate:new Date().toISOString()};
+}
+async function saveStudentResult(){
+ const msg=document.getElementById('saveResultMsg');
+ const record=buildStudentRecord();
+ localStorage.setItem('inverterAsyn1LastRecord',JSON.stringify(record));
+ if(!DATA_ENDPOINT){msg.textContent='Result saved on this device.';msg.className='success';return}
+ msg.textContent='Saving result to class database…';msg.className='muted';
+ try{const res=await fetch(DATA_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(record)});await res.text();msg.textContent='☁️ Result saved to Google Sheet ✓';msg.className='success'}catch(e){msg.textContent='Shared sheet unavailable. Result is saved on this device.';msg.className='warning'}
+}
+function openDashboard(){
+ const ref=JSON.parse(localStorage.getItem('inverterAsyn1Reflection')||'null');
+ const wrap=JSON.parse(localStorage.getItem('inverterAsyn1Wrap')||'null');
+ const completed=done.filter(Boolean).length;
+ const score=localStorage.getItem('inverterAsyn1Score')||'Not submitted';
+ document.getElementById('dashContent').innerHTML=`
+ <div class="grid3"><div class="card"><div class="muted">Activities Completed</div><h2>${completed}/6</h2></div><div class="card"><div class="muted">Knowledge Check</div><h2>${score}</h2></div><div class="card"><div class="muted">App Effectiveness</div><h2>${ref?ref.effectiveness+'/5':'—'}</h2></div></div>
+ <div class="grid2" style="margin-top:15px"><div class="card"><h3>Student</h3><p><b>${student.name||'—'}</b><br>${student.id||'—'} • ${student.className||'—'}</p><h3>Reflection</h3><p>${ref?.answer||'—'}</p><h3>Main Difficulty</h3><p>${ref?.difficulty||'—'}</p><h3>Improvement</h3><p>${ref?.improvement||'—'}</p></div><div class="card"><h3>Learning Progress</h3><p><b>${Math.round(completed/6*100)}%</b></p><div class="progress"><div class="bar" style="width:${completed/6*100}%"></div></div><h3>Exit Ticket</h3><p>${wrap?.takeaway||'—'}</p><h3>Question for Next Sync</h3><p>${wrap?.question||'—'}</p></div></div>
+ <div class="actions" style="margin-top:16px"><button class="green" onclick="saveStudentResult()">☁️ SAVE RESULT</button><span id="saveResultMsg" class="muted" style="align-self:center"></span></div>`;
+ document.getElementById('dashboard').style.display='block';
+}
+function closeDashboard(){document.getElementById('dashboard').style.display='none'}
+
+function renderCompletion(){
+ clearInterval(interval);renderRoadmap();
+ const score=localStorage.getItem('inverterAsyn1Score')||'—';
+ const ref=localStorage.getItem('inverterAsyn1Reflection')?'✓':'—';
+ document.getElementById('content').innerHTML=`
+ <div style="text-align:center;padding:30px 10px">
+  <div style="font-size:64px">🎉</div>
+  <h2 style="font-size:32px">ASYN 1 COMPLETED</h2>
+  <p class="muted">Topic 5 • Introduction to Inverter</p>
+  <div class="notice" style="text-align:left"><b>Well done!</b><br>You have completed the 60-minute ASYN 1 learning sequence.</div>
+  <div class="grid3" style="text-align:left">
+   <div class="card"><div class="muted">Activities</div><h2>6/6</h2><div class="muted">Completed</div></div>
+   <div class="card"><div class="muted">Knowledge Check</div><h2>${score}</h2><div class="muted">Best recorded score</div></div>
+   <div class="card"><div class="muted">Reflection</div><h2>${ref}</h2><div class="muted">Submitted</div></div>
+  </div>
+  <div class="notice" style="text-align:left;margin-top:18px"><b>Next:</b> ASYN 2 — Basic Inverter Circuit & Switching.</div>
+  <div class="actions" style="justify-content:center;margin-top:18px"><button class="green" onclick="saveStudentResult()">☁️ SAVE MY RESULT</button><span id="saveResultMsg" class="muted" style="align-self:center"></span></div>
+ </div>`;
+}
+restore();
+if(sessionStarted){
+ document.getElementById('studentId').value=student.id||'';
+ document.getElementById('studentName').value=student.name||'';
+ document.getElementById('studentClass').value=student.className||'';
+ document.querySelectorAll('#studentPanel input').forEach(x=>x.disabled=true);
+ render();clearInterval(interval);interval=setInterval(updateTimer,250);
+}else{
+ render();
+}
+</script>
+</body>
+</html>
