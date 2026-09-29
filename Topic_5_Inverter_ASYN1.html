@@ -346,19 +346,48 @@ function render(){
    <button class="secondary" onclick="setInverterState('negative')">⬇ −V<sub>dc</sub><br><small>S2 ON + S3 ON</small></button>
   </div>
 
-  <div class="card" style="margin-top:16px;text-align:center">
-   <div class="muted">OUTPUT VOLTAGE ACROSS LOAD</div>
-   <div id="output" class="output" style="font-size:38px;margin:10px 0">Vo = 0 V</div>
-   <div id="polarityText" class="notice" style="margin:0">No output polarity selected yet.</div>
-   <div style="margin-top:14px">
-    <div class="muted" style="margin-bottom:6px">SIMPLIFIED OUTPUT WAVEFORM</div>
-    <div id="waveform" style="height:70px;border:1px solid #315b82;border-radius:10px;background:#050b15;display:flex;align-items:center;justify-content:center;overflow:hidden">
-      <svg width="100%" height="70" viewBox="0 0 600 70" preserveAspectRatio="none" aria-label="Output waveform">
-       <line x1="0" y1="35" x2="600" y2="35" stroke="#38536d" stroke-width="1"/>
-       <polyline points="0,35 80,35 80,12 220,12 220,35 300,35 300,58 440,58 440,35 520,35 520,12 600,12" fill="none" stroke="#61d6ff" stroke-width="4"/>
+  <div class="card" style="margin-top:16px">
+   <div style="text-align:center;margin-bottom:12px">
+    <div class="muted">FROM DC SOURCE TO AC OUTPUT</div>
+    <div style="font-size:14px;color:#b9d7ee">The DC input stays constant. The inverter changes the polarity across the load by switching the four devices.</div>
+   </div>
+
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:stretch">
+    <div class="card" style="background:#071426;border-color:#315b82;text-align:center">
+      <div style="font-weight:800;font-size:17px">🔋 DC INPUT</div>
+      <div style="font-size:30px;font-weight:900;margin:8px 0">V<sub>dc</sub> = +100 V</div>
+      <div style="font-size:12px;color:#8fb4d4;margin-bottom:8px">CONSTANT DC VOLTAGE</div>
+      <svg width="100%" height="90" viewBox="0 0 600 90" preserveAspectRatio="none" aria-label="DC input waveform">
+       <line x1="0" y1="45" x2="600" y2="45" stroke="#38536d" stroke-width="1"/>
+       <line x1="20" y1="45" x2="580" y2="45" stroke="#8fb4d4" stroke-width="2"/>
+       <polyline points="20,45 20,18 580,18" fill="none" stroke="#61d6ff" stroke-width="5"/>
       </svg>
+      <div style="font-size:12px;color:#8fb4d4">TIME →</div>
+      <div class="notice" style="margin-top:8px"><b>DC:</b> polarity remains constant.</div>
     </div>
-    <div style="display:flex;justify-content:space-between;font-size:12px;color:#8fb4d4;margin-top:4px"><span>+Vdc</span><span>0</span><span>−Vdc</span></div>
+
+    <div class="card" style="background:#071426;border-color:#315b82;text-align:center">
+      <div style="font-weight:800;font-size:17px">⚡ AC OUTPUT</div>
+      <div id="output" class="output" style="font-size:30px;font-weight:900;margin:8px 0">Vo = 0 V</div>
+      <div style="font-size:12px;color:#8fb4d4;margin-bottom:8px">POLARITY ALTERNATES</div>
+      <svg id="outputWaveSvg" width="100%" height="90" viewBox="0 0 600 90" preserveAspectRatio="none" aria-label="AC square wave output">
+       <line x1="0" y1="45" x2="600" y2="45" stroke="#38536d" stroke-width="1"/>
+       <polyline id="outputWave" points="20,45 20,18 160,18 160,72 300,72 300,18 440,18 440,72 580,72" fill="none" stroke="#61d6ff" stroke-width="5"/>
+      </svg>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#8fb4d4"><span>+Vdc</span><span>0</span><span>−Vdc</span></div>
+      <div id="polarityText" class="notice" style="margin-top:8px">Select +Vdc or −Vdc to see the output change.</div>
+    </div>
+   </div>
+
+   <div class="notice" style="margin-top:14px;text-align:center">
+    <b>👀 LOOK CAREFULLY:</b>
+    DC input is a constant level, while the inverter output becomes a
+    <b>square wave</b> when the switching sequence repeatedly changes the output polarity.
+   </div>
+
+   <div style="text-align:center;margin-top:12px">
+    <button class="green" onclick="runOneCycle()">▶ RUN DC → AC CYCLE</button>
+    <span id="cycleStatus" class="muted" style="display:inline-block;margin-left:10px">Press the button to watch the polarity alternate.</span>
    </div>
   </div>
 
@@ -506,11 +535,38 @@ function onYouTubeStateChange(event){
  }
 }
 let positiveSeen=false,negativeSeen=false,switchChallengeCorrect=false;
+function updateOutputWaveform(state){
+ const wave=document.getElementById('outputWave');
+ if(!wave)return;
+ const paths={
+  positive:'20,45 20,18 580,18',
+  negative:'20,45 20,72 580,72',
+  zero:'20,45 580,45',
+  cycle:'20,45 20,18 150,18 150,72 300,72 300,18 450,18 450,72 580,72'
+ };
+ wave.setAttribute('points',paths[state]||paths.cycle);
+}
+
+function runOneCycle(){
+ const seq=['positive','negative','positive','negative','zero'];
+ let i=0;
+ const status=document.getElementById('cycleStatus');
+ if(status)status.textContent='Watching: +Vdc → −Vdc → +Vdc → −Vdc';
+ const timer=setInterval(()=>{
+   setInverterState(seq[i]);
+   i++;
+   if(i>=seq.length){
+    clearInterval(timer);
+    if(status)status.textContent='✓ One DC → AC switching cycle completed.';
+   }
+ },700);
+}
+
 function setInverterState(state){
  const states={
-  positive:{s1:true,s2:false,s3:false,s4:true,vo:'+Vdc',text:'POSITIVE POLARITY: current path produces +Vdc across the load.'},
-  negative:{s1:false,s2:true,s3:true,s4:false,vo:'−Vdc',text:'NEGATIVE POLARITY: current path reverses and produces −Vdc across the load.'},
-  zero:{s1:false,s2:false,s3:false,s4:false,vo:'0 V',text:'ZERO OUTPUT: no active switching path is selected.'}
+  positive:{s1:true,s2:false,s3:false,s4:true,vo:'+Vdc',text:'POSITIVE POLARITY: S1 + S4 create +Vdc across the load.'},
+  negative:{s1:false,s2:true,s3:true,s4:false,vo:'−Vdc',text:'NEGATIVE POLARITY: S2 + S3 reverse the load polarity and create −Vdc.'},
+  zero:{s1:false,s2:false,s3:false,s4:false,vo:'0 V',text:'ZERO OUTPUT: all switches are OFF, so the simplified output is 0 V.'}
  };
  const x=states[state];
  ['s1','s2','s3','s4'].forEach(n=>{
@@ -521,6 +577,7 @@ function setInverterState(state){
  document.getElementById('output').textContent='Vo = '+x.vo;
  document.getElementById('bridgeLoad').textContent='Vo = '+x.vo;
  document.getElementById('polarityText').textContent=x.text;
+ updateOutputWaveform(state);
  if(state==='positive')positiveSeen=true;
  if(state==='negative')negativeSeen=true;
  const count=(positiveSeen?1:0)+(negativeSeen?1:0);
